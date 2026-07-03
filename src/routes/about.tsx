@@ -36,7 +36,7 @@ export default function AboutPage({ profile }: { profile: Profile }) {
   const hasProfile = Boolean(profile.name.trim() || profile.about.trim());
 
   return (
-    <SiteLayout>
+    <SiteLayout profile={profile}>
       <Section className="pb-20 pt-16">
         <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
           <div>

@@ -5,9 +5,9 @@ import { getPortfolioData } from "@/server/portfolio/repository";
 export const revalidate = 60;
 
 export default async function Page() {
-  const { projects } = await getPortfolioData();
+  const { profile, projects } = await getPortfolioData();
   return (
-    <SiteLayout>
+    <SiteLayout profile={profile}>
       <ProjectsPage projects={projects} />
     </SiteLayout>
   );

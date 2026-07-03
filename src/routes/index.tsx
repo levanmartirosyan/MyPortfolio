@@ -54,7 +54,7 @@ export default function Home({ profile, projects }: { profile: Profile; projects
   const hasProfile = Boolean(profile.name.trim() || profile.intro.trim());
   const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
   return (
-    <SiteLayout>
+    <SiteLayout profile={profile}>
       {/* Hero */}
       <Section className="relative pb-24 pt-20 sm:pt-28">
         <div className="animate-fade-up mx-auto max-w-3xl text-center">

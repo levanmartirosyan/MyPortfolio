@@ -2,12 +2,18 @@ import { Briefcase } from "lucide-react";
 import { SiteLayout, Section, Eyebrow } from "@/components/site/SiteLayout";
 import { TechBadge } from "@/components/site/TechBadge";
 import { experienceDuration, formatMonth } from "@/lib/portfolio-utils";
-import type { Experience } from "@/server/portfolio/types";
+import type { Experience, Profile } from "@/server/portfolio/types";
 
-export default function ExperiencePage({ experiences: raw }: { experiences: Experience[] }) {
+export default function ExperiencePage({
+  profile,
+  experiences: raw,
+}: {
+  profile: Profile;
+  experiences: Experience[];
+}) {
   const experiences = [...raw].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
   return (
-    <SiteLayout>
+    <SiteLayout profile={profile}>
       <Section className="pb-12 pt-16">
         <Eyebrow>Career</Eyebrow>
         <h1 className="mt-4 font-display text-4xl font-bold sm:text-5xl">Work experience</h1>
