@@ -26,10 +26,10 @@ export default function ExperiencePage({
         <div className="relative">
           {experiences.length > 0 ? (
             <ul className="relative space-y-6">
-              <span className="absolute bottom-4 left-4 top-4 w-px bg-gradient-to-b from-primary/60 via-border to-transparent md:left-6" />
+              <span className="absolute inset-y-0 left-4 w-px bg-primary/35 md:left-6" />
               {experiences.map((e) => (
                 <li key={e.id} className="relative pl-12 md:pl-16">
-                  <div className="absolute left-0 top-4 grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-background text-primary ring-4 ring-background md:left-2">
+                  <div className="absolute left-0 top-4 z-10 grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-background text-primary ring-4 ring-background md:left-2">
                     <Briefcase className="h-4 w-4" />
                   </div>
                   <article className="glow-border card-hover rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur">
