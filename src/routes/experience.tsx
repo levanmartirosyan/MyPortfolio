@@ -24,9 +24,9 @@ export default function ExperiencePage({
 
       <Section className="pb-24">
         <div className="relative">
-          <div className="absolute left-4 top-0 h-full w-px bg-gradient-to-b from-primary/60 via-border to-transparent md:left-6" />
           {experiences.length > 0 ? (
-            <ul className="space-y-6">
+            <ul className="relative space-y-6">
+              <span className="absolute bottom-4 left-4 top-4 w-px bg-gradient-to-b from-primary/60 via-border to-transparent md:left-6" />
               {experiences.map((e) => (
                 <li key={e.id} className="relative pl-12 md:pl-16">
                   <div className="absolute left-0 top-4 grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-background text-primary ring-4 ring-background md:left-2">
