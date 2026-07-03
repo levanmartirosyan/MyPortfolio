@@ -2,6 +2,7 @@ import "server-only";
 
 import { asc, desc, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
+import { cache } from "react";
 import { getDb, hasDatabaseUrl, resetDatabaseConnection } from "@/server/db/client";
 import { experiences, messages, profile, projects, social } from "@/server/db/schema";
 import { defaultPortfolioData } from "./seed";
@@ -17,6 +18,33 @@ type ExperienceInput = Omit<Experience, "id" | "endDate"> & {
   id?: string;
   endDate?: string | null;
 };
+
+const legacyDemoProjectIds = new Set([
+  "ledgerly-saas-accounting",
+  "nimbus-team-chat",
+  "orbit-crm",
+  "pulse-uptime-monitor",
+]);
+
+const legacyDemoExperienceIds = new Set(["freelance-full-stack", "tech-studio-software-engineer"]);
+
+function isLegacyDemoProfile(row: Profile) {
+  return (
+    row.name === "Levan" &&
+    row.title === "Software Engineer - Full-Stack Developer" &&
+    row.intro.startsWith("I design and build fast, reliable web products") &&
+    row.about.startsWith("I'm a full-stack software engineer focused on shipping")
+  );
+}
+
+function isLegacyDemoSocial(row: Social) {
+  return (
+    row.linkedin === "https://linkedin.com/in/your-handle" &&
+    row.github === "https://github.com/your-handle" &&
+    row.email === "hello@example.com" &&
+    row.website === ""
+  );
+}
 
 function makeId(value: string) {
   const normalized = value
@@ -90,7 +118,7 @@ async function withDatabase<T>(
     return await withTimeout(
       operation(),
       "Database read",
-      options.timeout ?? timeoutMs("DB_READ_TIMEOUT_MS", 2500),
+      options.timeout ?? timeoutMs("DB_READ_TIMEOUT_MS", 900),
     );
   } catch (error) {
     if (!options.bypassCooldown) {
@@ -99,7 +127,7 @@ async function withDatabase<T>(
     if (error instanceof Error && error.message.includes("timed out")) {
       await resetDatabaseConnection();
     }
-    console.warn("Database unavailable, using seed fallback for read.", error);
+    console.warn("Database unavailable, returning empty portfolio data for read.", error);
     return fallback;
   }
 }
@@ -121,7 +149,7 @@ async function runDatabaseWrite<T>(operation: Promise<T>) {
   }
 }
 
-export async function getPortfolioData(includeMessages = false): Promise<PortfolioData> {
+async function loadPortfolioData(includeMessages = false): Promise<PortfolioData> {
   return withDatabase(
     async () => {
       const db = getDb();
@@ -138,10 +166,20 @@ export async function getPortfolioData(includeMessages = false): Promise<Portfol
       );
 
       const data: PortfolioData = {
-        profile: profileRows[0] ?? defaultPortfolioData.profile,
-        social: socialRows[0] ?? defaultPortfolioData.social,
-        projects: projectRows.map(normalizeProject),
-        experiences: experienceRows.map(normalizeExperience),
+        profile:
+          profileRows[0] && !isLegacyDemoProfile(profileRows[0])
+            ? profileRows[0]
+            : defaultPortfolioData.profile,
+        social:
+          socialRows[0] && !isLegacyDemoSocial(socialRows[0])
+            ? socialRows[0]
+            : defaultPortfolioData.social,
+        projects: projectRows
+          .filter((project) => !legacyDemoProjectIds.has(project.id))
+          .map(normalizeProject),
+        experiences: experienceRows
+          .filter((experience) => !legacyDemoExperienceIds.has(experience.id))
+          .map(normalizeExperience),
         messages: includeMessages ? messageRows.map(mapMessage) : portfolioSnapshot.messages,
       };
       portfolioSnapshot = data;
@@ -159,6 +197,13 @@ export async function getPortfolioData(includeMessages = false): Promise<Portfol
       timeout: includeMessages ? timeoutMs("DB_ADMIN_READ_TIMEOUT_MS", 8000) : undefined,
     },
   );
+}
+
+const getCachedPublicPortfolioData = cache(() => loadPortfolioData(false));
+
+export async function getPortfolioData(includeMessages = false): Promise<PortfolioData> {
+  if (includeMessages) return loadPortfolioData(true);
+  return getCachedPublicPortfolioData();
 }
 
 export async function saveProfile(value: Profile) {

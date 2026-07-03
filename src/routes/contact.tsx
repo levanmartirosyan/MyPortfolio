@@ -55,7 +55,7 @@ export default function ContactPage({ social }: { social: Social }) {
     { icon: Mail, label: "Email", value: social.email, href: `mailto:${social.email}` },
     { icon: Linkedin, label: "LinkedIn", value: "Connect", href: social.linkedin },
     { icon: Github, label: "GitHub", value: "Follow", href: social.github },
-  ].filter((c) => c.value);
+  ].filter((c) => c.href && c.href !== "mailto:");
 
   return (
     <>
@@ -131,25 +131,31 @@ export default function ContactPage({ social }: { social: Social }) {
           </form>
 
           <div className="space-y-3">
-            {cards.map((c) => (
-              <a
-                key={c.label}
-                href={c.href}
-                target="_blank"
-                rel="noreferrer"
-                className="glow-border card-hover flex items-center gap-4 rounded-2xl border border-border/60 bg-card/60 p-5 backdrop-blur"
-              >
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/30">
-                  <c.icon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                    {c.label}
-                  </p>
-                  <p className="truncate font-medium">{c.value}</p>
-                </div>
-              </a>
-            ))}
+            {cards.length > 0 ? (
+              cards.map((c) => (
+                <a
+                  key={c.label}
+                  href={c.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="glow-border card-hover flex items-center gap-4 rounded-2xl border border-border/60 bg-card/60 p-5 backdrop-blur"
+                >
+                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/30">
+                    <c.icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                      {c.label}
+                    </p>
+                    <p className="truncate font-medium">{c.value}</p>
+                  </div>
+                </a>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border p-5 text-sm text-muted-foreground">
+                No contact links yet.
+              </div>
+            )}
             <div className="rounded-2xl border border-dashed border-border p-5 text-sm text-muted-foreground">
               <div className="mb-2 inline-flex items-center gap-2 text-primary">
                 <MapPin className="h-4 w-4" /> Availability

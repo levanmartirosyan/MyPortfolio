@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   description:
     "Portfolio of Levan - full-stack software engineer building fast, reliable web apps with .NET, React, Next.js and PostgreSQL.",
   authors: [{ name: "Levan" }],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/icon.svg",
+  },
   openGraph: {
     title: "Levan - Software Engineer & Full-Stack Developer",
     description:

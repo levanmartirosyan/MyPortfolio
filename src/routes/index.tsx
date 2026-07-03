@@ -51,6 +51,7 @@ const perks = [
 ];
 
 export default function Home({ profile, projects }: { profile: Profile; projects: Project[] }) {
+  const hasProfile = Boolean(profile.name.trim() || profile.intro.trim());
   const featuredProjects = projects.filter((p) => p.featured).slice(0, 3);
   return (
     <SiteLayout>
@@ -58,21 +59,30 @@ export default function Home({ profile, projects }: { profile: Profile; projects
       <Section className="relative pb-24 pt-20 sm:pt-28">
         <div className="animate-fade-up mx-auto max-w-3xl text-center">
           <Eyebrow>Available for new opportunities</Eyebrow>
-          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-            Hi, I'm <span className="text-gradient">{profile.name}</span>.
-            <br />
-            {/* <span className="text-foreground">I build </span>
-            <span className="text-gradient animate-gradient bg-gradient-to-r from-primary via-neon-soft to-primary bg-clip-text">
-              serious web software
-            </span>
-            . */}
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            {profile.intro}
-          </p>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Currently: <TypingRoles />
-          </p>
+          {hasProfile ? (
+            <>
+              <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+                Hi, I'm <span className="text-gradient">{profile.name}</span>.
+              </h1>
+              {profile.intro && (
+                <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
+                  {profile.intro}
+                </p>
+              )}
+              <p className="mt-4 text-sm text-muted-foreground">
+                Currently: <TypingRoles />
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+                No profile data yet.
+              </h1>
+              <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
+                Add your profile details in the admin panel to publish the homepage.
+              </p>
+            </>
+          )}
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
@@ -153,9 +163,13 @@ export default function Home({ profile, projects }: { profile: Profile; projects
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.map((p) => (
-            <ProjectCard key={p.id} project={p} />
-          ))}
+          {featuredProjects.length > 0 ? (
+            featuredProjects.map((p) => <ProjectCard key={p.id} project={p} />)
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground sm:col-span-2 lg:col-span-3">
+              No featured projects yet.
+            </div>
+          )}
         </div>
       </Section>
 

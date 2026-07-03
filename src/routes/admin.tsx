@@ -282,6 +282,7 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
   const experiences = usePortfolio((s) => s.experiences);
   const messages = usePortfolio((s) => s.messages);
   const unread = messages.filter((m) => !m.read).length;
+  const featuredProjects = projects.filter((p) => p.featured);
 
   return (
     <div className="space-y-6">
@@ -343,22 +344,23 @@ function DashboardView({ setTab }: { setTab: (t: Tab) => void }) {
         <div className="glow-border rounded-2xl border border-border/60 bg-card/60 p-6">
           <h3 className="font-display text-base font-semibold">Featured projects</h3>
           <ul className="mt-4 space-y-3">
-            {projects
-              .filter((p) => p.featured)
-              .map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between gap-3 border-b border-border/50 pb-3 last:border-0"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{p.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {p.tech.slice(0, 4).join(" · ")}
-                    </p>
-                  </div>
-                  <Star className="h-4 w-4 fill-primary text-primary" />
-                </li>
-              ))}
+            {featuredProjects.map((p) => (
+              <li
+                key={p.id}
+                className="flex items-center justify-between gap-3 border-b border-border/50 pb-3 last:border-0"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{p.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {p.tech.length > 0 ? p.tech.slice(0, 4).join(" / ") : "No tech stack yet."}
+                  </p>
+                </div>
+                <Star className="h-4 w-4 fill-primary text-primary" />
+              </li>
+            ))}
+            {featuredProjects.length === 0 && (
+              <li className="text-sm text-muted-foreground">No featured projects yet.</li>
+            )}
           </ul>
         </div>
       </div>
@@ -387,7 +389,7 @@ function ProjectsAdmin() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="admin-input pl-9"
+            className="admin-input admin-search-input"
             placeholder="Search projects..."
           />
         </div>
@@ -646,16 +648,20 @@ function ProjectEditor({
           </button>
         </div>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {p.tech.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setP({ ...p, tech: p.tech.filter((x) => x !== t) })}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs"
-            >
-              {t} <X className="h-3 w-3" />
-            </button>
-          ))}
+          {p.tech.length > 0 ? (
+            p.tech.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setP({ ...p, tech: p.tech.filter((x) => x !== t) })}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs"
+              >
+                {t} <X className="h-3 w-3" />
+              </button>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">No tech stack yet.</p>
+          )}
         </div>
       </AdminField>
 
@@ -682,21 +688,27 @@ function ProjectEditor({
           </button>
         </div>
         <ul className="mt-2 space-y-1 text-sm">
-          {(p.features ?? []).map((f, i) => (
-            <li
-              key={i}
-              className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-3 py-1.5"
-            >
-              <span className="min-w-0 break-words">{f}</span>
-              <button
-                type="button"
-                onClick={() => setP({ ...p, features: p.features!.filter((_, idx) => idx !== i) })}
-                className="shrink-0 text-muted-foreground hover:text-destructive"
+          {(p.features ?? []).length > 0 ? (
+            (p.features ?? []).map((f, i) => (
+              <li
+                key={i}
+                className="flex items-center justify-between gap-2 rounded-md border border-border/50 px-3 py-1.5"
               >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </li>
-          ))}
+                <span className="min-w-0 break-words">{f}</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setP({ ...p, features: p.features!.filter((_, idx) => idx !== i) })
+                  }
+                  className="shrink-0 text-muted-foreground hover:text-destructive"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </li>
+            ))
+          ) : (
+            <li className="text-sm text-muted-foreground">No key features yet.</li>
+          )}
         </ul>
       </AdminField>
 
@@ -758,12 +770,19 @@ function ExperienceAdmin() {
             </div>
             <p className="mt-2 text-sm text-muted-foreground">{e.description}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {e.tech.map((t) => (
-                <TechBadge key={t}>{t}</TechBadge>
-              ))}
+              {e.tech.length > 0 ? (
+                e.tech.map((t) => <TechBadge key={t}>{t}</TechBadge>)
+              ) : (
+                <p className="text-sm text-muted-foreground">No technologies yet.</p>
+              )}
             </div>
           </div>
         ))}
+        {list.length === 0 && (
+          <div className="glow-border rounded-2xl border border-border/60 bg-card/60 p-8 text-center text-sm text-muted-foreground">
+            No experience yet.
+          </div>
+        )}
       </div>
 
       {editing && (
@@ -888,16 +907,20 @@ function ExperienceEditor({
           />
         </div>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {e.tech.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setE({ ...e, tech: e.tech.filter((x) => x !== t) })}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs"
-            >
-              {t} <X className="h-3 w-3" />
-            </button>
-          ))}
+          {e.tech.length > 0 ? (
+            e.tech.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setE({ ...e, tech: e.tech.filter((x) => x !== t) })}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs"
+              >
+                {t} <X className="h-3 w-3" />
+              </button>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">No technologies yet.</p>
+          )}
         </div>
       </AdminField>
 
@@ -936,7 +959,7 @@ function MessagesAdmin() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="admin-input pl-9"
+          className="admin-input admin-search-input"
           placeholder="Search messages..."
         />
       </div>
@@ -1342,6 +1365,9 @@ function AdminStyles() {
       }
       .admin-input::placeholder {
         color: var(--color-muted-foreground);
+      }
+      .admin-search-input {
+        padding-left: 2.25rem;
       }
       .admin-input:disabled {
         color: color-mix(in oklch, var(--color-foreground) 70%, transparent);

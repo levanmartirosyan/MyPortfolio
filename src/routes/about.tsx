@@ -1,13 +1,14 @@
+import Image from "next/image";
 import { Download, GraduationCap, Rocket, Wrench } from "lucide-react";
 import { SiteLayout, Section, Eyebrow } from "@/components/site/SiteLayout";
 import { TechBadge } from "@/components/site/TechBadge";
 import type { Profile } from "@/server/portfolio/types";
 
 const skills = {
-  Backend: [".NET 8", "ASP.NET Core", "C#", "EF Core", "MediatR", "Node.js"],
+  Backend: [".NET", "ASP.NET Core", "C#", "EF Core", "Redis", "SignalR", "REST APIs", "JWT Auth"],
   Frontend: ["React", "Next.js", "Angular", "TypeScript", "Tailwind CSS"],
-  Data: ["PostgreSQL", "SQL Server", "Redis", "Elasticsearch"],
-  DevOps: ["Docker", "GitHub Actions", "Azure", "Nginx"],
+  Data: ["PostgreSQL", "SQL Server", "Redis"],
+  DevOps: ["Docker", "GitHub Actions", "Azure"],
 };
 
 const journey = [
@@ -32,6 +33,8 @@ const journey = [
 ];
 
 export default function AboutPage({ profile }: { profile: Profile }) {
+  const hasProfile = Boolean(profile.name.trim() || profile.about.trim());
+
   return (
     <SiteLayout>
       <Section className="pb-20 pt-16">
@@ -39,9 +42,13 @@ export default function AboutPage({ profile }: { profile: Profile }) {
           <div>
             <Eyebrow>About me</Eyebrow>
             <h1 className="mt-4 font-display text-4xl font-bold sm:text-5xl">
-              I build software the way I'd want to use it.
+              {hasProfile ? "I build software the way I'd want to use it." : "No profile data yet."}
             </h1>
-            <p className="mt-6 max-w-2xl text-muted-foreground">{profile.about}</p>
+            <p className="mt-6 max-w-2xl text-muted-foreground">
+              {hasProfile
+                ? profile.about
+                : "Add your about text in the admin panel to publish this page."}
+            </p>
             {profile.cvUrl && (
               <a
                 href={profile.cvUrl}
@@ -55,10 +62,16 @@ export default function AboutPage({ profile }: { profile: Profile }) {
           </div>
           <div className="relative hidden aspect-square w-52 shrink-0 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/30 via-surface to-background md:block">
             {profile.avatar ? (
-              <img src={profile.avatar} alt={profile.name} className="h-full w-full object-cover" />
+              <Image
+                src={profile.avatar}
+                alt={profile.name}
+                fill
+                sizes="208px"
+                className="object-cover"
+              />
             ) : (
               <div className="grid h-full w-full place-items-center font-display text-6xl font-bold text-primary">
-                {profile.name.slice(0, 1)}
+                {profile.name.slice(0, 1) || "LM"}
               </div>
             )}
           </div>

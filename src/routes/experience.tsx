@@ -19,40 +19,46 @@ export default function ExperiencePage({ experiences: raw }: { experiences: Expe
       <Section className="pb-24">
         <div className="relative">
           <div className="absolute left-4 top-0 h-full w-px bg-gradient-to-b from-primary/60 via-border to-transparent md:left-6" />
-          <ul className="space-y-6">
-            {experiences.map((e) => (
-              <li key={e.id} className="relative pl-12 md:pl-16">
-                <div className="absolute left-0 top-4 grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-background text-primary ring-4 ring-background md:left-2">
-                  <Briefcase className="h-4 w-4" />
-                </div>
-                <article className="glow-border card-hover rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-display text-lg font-semibold">{e.position}</h3>
-                      <p className="text-sm text-muted-foreground">{e.company}</p>
-                    </div>
-                    <div className="text-right text-xs text-muted-foreground">
-                      <p>
-                        {formatMonth(e.startDate)} —{" "}
-                        {e.current ? "Present" : formatMonth(e.endDate)}
-                      </p>
-                      <p className="mt-0.5 text-primary">{experienceDuration(e)}</p>
-                    </div>
+          {experiences.length > 0 ? (
+            <ul className="space-y-6">
+              {experiences.map((e) => (
+                <li key={e.id} className="relative pl-12 md:pl-16">
+                  <div className="absolute left-0 top-4 grid h-8 w-8 place-items-center rounded-full border border-primary/40 bg-background text-primary ring-4 ring-background md:left-2">
+                    <Briefcase className="h-4 w-4" />
                   </div>
-                  <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
-                    {e.description}
-                  </p>
-                  {e.tech.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {e.tech.map((t) => (
-                        <TechBadge key={t}>{t}</TechBadge>
-                      ))}
+                  <article className="glow-border card-hover rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <h3 className="font-display text-lg font-semibold">{e.position}</h3>
+                        <p className="text-sm text-muted-foreground">{e.company}</p>
+                      </div>
+                      <div className="text-right text-xs text-muted-foreground">
+                        <p>
+                          {formatMonth(e.startDate)} —{" "}
+                          {e.current ? "Present" : formatMonth(e.endDate)}
+                        </p>
+                        <p className="mt-0.5 text-primary">{experienceDuration(e)}</p>
+                      </div>
                     </div>
-                  )}
-                </article>
-              </li>
-            ))}
-          </ul>
+                    <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
+                      {e.description}
+                    </p>
+                    {e.tech.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {e.tech.map((t) => (
+                          <TechBadge key={t}>{t}</TechBadge>
+                        ))}
+                      </div>
+                    )}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
+              No experience data yet.
+            </div>
+          )}
         </div>
       </Section>
     </SiteLayout>

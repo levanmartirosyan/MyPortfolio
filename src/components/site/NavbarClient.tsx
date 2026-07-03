@@ -26,7 +26,7 @@ export function NavbarClient({ name }: { name: string }) {
             <Code2 className="h-4 w-4" />
           </span>
           <span className="font-display text-lg font-semibold tracking-tight">
-            {name}
+            {name || "Portfolio"}
             <span className="text-primary">.</span>
           </span>
         </Link>

@@ -2,7 +2,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import ProjectsPage from "@/routes/projects";
 import { getPortfolioData } from "@/server/portfolio/repository";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Page() {
   const { projects } = await getPortfolioData();
